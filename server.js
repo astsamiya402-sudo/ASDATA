@@ -95,7 +95,22 @@ app.post('/api/buy-data', rateLimit, async (req, res) => {
     res.status(502).json({ status: false, message: 'Could not reach VTUGATE.' });
   }
 });
+app.get('/test-data-plans', async (_req, res) => {
+  if (!requireKey(res)) return;
 
+  try {
+    const result = await vtugatePost('/api/v1/fetchdataplans', {
+      service_id: 1
+    });
+
+    res.status(result.httpStatus).json(result.data);
+  } catch (err) {
+    res.status(502).json({
+      status: false,
+      message: 'Could not reach VTUGATE.'
+    });
+  }
+});
 app.use((_req, res) => res.status(404).json({ status: false, message: 'Route not found.' }));
 
 app.listen(PORT, () => console.log(`ASDATA backend listening on port ${PORT}`));
